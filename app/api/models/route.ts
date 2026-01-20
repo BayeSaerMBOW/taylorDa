@@ -26,9 +26,18 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(model, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Error creating model:', error)
+    // En production, logguer l'erreur pour le debugging
+    const errorMessage = error?.message || 'Unknown error'
+    const errorStack = error?.stack || ''
+    
     return NextResponse.json(
-      { error: 'Failed to create model' },
+      { 
+        error: 'Failed to create model',
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        stack: process.env.NODE_ENV === 'development' ? errorStack : undefined
+      },
       { status: 500 }
     )
   }
